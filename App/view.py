@@ -34,12 +34,63 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
+# ___________________________________________________
+#  Variables
+# ___________________________________________________
+
+
+landingFile = 'landing_points.csv'
+connectionsFile = 'connections.csv'
+countriesFile = 'countries.csv'
+initialPoints = None
+
+
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Cargar Datos")
+    print("3- Requerimiento 1")
+    print("4- Requerimiento 2")
+    print("5- Requerimiento 3")
+    print("6- Requerimiento 4")
+    print("7- Requerimiento 5")
+
+
+def optionTwo(cont):
+    controller.loadData(cont, landingFile, connectionsFile, countriesFile)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalPoints(cont)
+    numCountries = controller.totalCountries(cont)
+    print("="*5 + " DATOS CARGADOS " + "="*5)
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+    print('Numero de paises:', numCountries)
+    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    print()
+
+
+def optionThree(cont):
+    pass
+
+
+def optionFour(cont):
+    pass
+
+
+def optionFive(cont):
+    pass
+
+
+def optionSix(cont):
+    pass
+
+
+def optionSeven(cont):
+    pass
+
 
 catalog = None
+
 
 """
 Menu principal
@@ -49,10 +100,26 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Cargando información de los archivos ....")
-
+        cont = controller.init()
     elif int(inputs[0]) == 2:
-        pass
-
+        optionTwo(cont)
+    elif int(inputs[0]) == 3:
+        optionThree(cont)
+    elif int(inputs[0]) == 4:
+        optionFour(cont)
+    elif int(inputs[0]) == 5:
+        optionFive(cont)
+    elif int(inputs[0]) == 6:
+        optionSix(cont)
+    elif int(inputs[0]) == 7:
+        optionSeven(cont)
     else:
         sys.exit(0)
 sys.exit(0)
+
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=thread_cycle)
+    thread.start()
+

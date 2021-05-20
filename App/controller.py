@@ -30,9 +30,67 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # analyzer es utilizado para interactuar con el modelo
+    analyzer = model.newAnalyzer()
+    return analyzer
+
 
 # Funciones para la carga de datos
+
+def loadData(analyzer, landingFile, connectionsFile, countriesFile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un arco entre cada par de estaciones que
+    pertenecen al mismo servicio y van en el mismo sentido.
+
+    addRouteConnection crea conexiones entre diferentes rutas
+    servidas en una misma estación.
+    """
+    landingFile = cf.data_dir + landingFile
+    connectionsFile = cf.data_dir + connectionsFile
+    countriesFile = cf.data_dir + countriesFile
+    landing_File = csv.DictReader(open(landingFile, encoding="utf-8"), delimiter=",")
+    connections_File = csv.DictReader(open(connectionsFile, encoding="utf-8-sig"), delimiter=",")
+    countries_File = csv.DictReader(open(countriesFile, encoding="utf-8"), delimiter=",")
+
+    for point in landing_File:
+        model.prepareData(analyzer, point)
+
+    for connection in connections_File:
+        model.loadData(analyzer, connection)
+
+    for country in countries_File:
+        model.loadCountry(analyzer, country)
+
+    model.addLandingPoints(analyzer)
+
+    model.addPointConnections(analyzer)
+
 
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def totalPoints(analyzer):
+    """
+    Total de landing points
+    """
+    return model.totalPoints(analyzer)
+
+
+def totalConnections(analyzer):
+    """
+    Total de conexiones submarinas
+    """
+    return model.totalConnections(analyzer)
+
+
+def totalCountries(analyzer):
+    """
+    Totald de paises cargados
+    """
+    return model.totalCountries(analyzer)
