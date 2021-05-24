@@ -54,6 +54,7 @@ def printMenu():
     print("5- Requerimiento 3")
     print("6- Requerimiento 4")
     print("7- Requerimiento 5")
+    print("0- Salir")
 
 
 def optionTwo(cont):
@@ -70,6 +71,11 @@ def optionTwo(cont):
 
 
 def optionThree(cont):
+    landing_point1 = input("Ingrese el nombre del landing point 1: ")
+    landing_point2 = input("Ingrese el nombre del landing point 2: ")
+    numClusters = controller.numClusters()
+    print("="*5 + " REQUERIMIENTO 1 " + "="*5)
+
     pass
 
 

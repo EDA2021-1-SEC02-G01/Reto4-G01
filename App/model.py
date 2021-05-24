@@ -89,7 +89,6 @@ def addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital):
         locOrigen = (float(point['latitude']), float(point['longitude']))
         locDestino = mp.get(analyzer['landing_points'], connection['destination'])['value']
         distancia = round(hs.haversine(locOrigen,locDestino), 2)
-        print(distancia)
     addConnection(analyzer, puntoOrigen, puntoDestino, distancia)
     loc1 = (float(point["latitude"]), float(point["longitude"]))
     loc2 = (float(datosCapital["CapitalLatitude"]), float(datosCapital["CapitalLongitude"]))
@@ -117,6 +116,7 @@ def addConnection(analyzer, origin, destination, distance):
         gr.addEdge(analyzer['connections'], origin, destination, distance)
     return analyzer
 
+
 def addPoint(analyzer, pointid):
     """
     Adiciona un landing_point-cable como un vertice del grafo
@@ -133,14 +133,21 @@ def addCountry(analyzer, country):
     mp.put(analyzer['countries'], country['CountryName'],country['CapitalName'])
     return analyzer
 
+
 # Funciones para agregar informacion al catalogo
+
+
 def addPosition(analyzer, punto):
-    loc = (float(punto["latitude"]),float(punto["longitude"]))
-    mp.put(analyzer["landing_points"], punto["landing_point_id"],loc)
+    loc = (float(punto["latitude"]), float(punto["longitude"]))
+    mp.put(analyzer["landing_points"], punto["landing_point_id"], loc)
     return analyzer
+
+
 # Funciones para creacion de datos
 
+
 # Funciones de consulta
+
 
 def totalPoints(analyzer):
     """

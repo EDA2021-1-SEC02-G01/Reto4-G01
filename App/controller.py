@@ -21,6 +21,7 @@
  """
 
 from os import name
+from DISClib.ADT import list as lt
 import config as cf
 import model
 import csv
@@ -58,28 +59,48 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
     connections_File = csv.DictReader(open(connectionsFile, encoding="utf-8-sig"), delimiter=",")
     countries_File = csv.DictReader(open(countriesFile, encoding="utf-8"), delimiter=",")
 
-    for punto in landing_File:
-        model.addPosition(analyzer, punto)
+    # Creacion de listas vacias para agregar cada uno de los elementos de lso archivos
+    # y asi recorrerlos mas facilmente.
+    listaLandingPoints = lt.newList('ARRAY_LIST')
+    listaConnections = lt.newList('ARRAY_LIST')
+    listaCountries = lt.newList('ARRAY_LIST')
 
-    for point in landing_File:
+    for punto in landing_File:
+        model.addPosition(analyzer, punto) 
+        lt.addLast(listaLandingPoints, punto)
+    
+    for connection in connections_File:
+        lt.addLast(listaConnections, connection)
+
+    for pais in countries_File:
+        lt.addLast(listaCountries, pais)
+        model.addCountry(analyzer, pais)
+
+    for point in lt.iterator(listaLandingPoints):
         name = point['name'].split(", ")
-        pais = name[1]
-        for country in countries_File:
+        if len(name) < 2:
+            pais = 'Micronesia'
+        else:
+            pais = name[1]
+        for country in lt.iterator(listaCountries):
             if country['CountryName'] == pais:
                 capital = country['CapitalName'] + "-" + pais
                 model.addPoint(analyzer, capital)
                 datosCapital = country
-                model.addCountry(analyzer, country)
-
+                break
+        
         lstPuntoActual = None
-        for connection in connections_File:
-            lstPuntoActual = model.addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital)
+        for connection in lt.iterator(listaConnections):
+            if connection['origin'] == point['landing_point_id']:
+                lstPuntoActual = model.addLandingPoint(analyzer, point,
+                                                       connection,
+                                                       lstPuntoActual,
+                                                       datosCapital)
         model.addConnectionsPoint(analyzer, lstPuntoActual)
 
 
-
-
 # Funciones de ordenamiento
+
 
 # Funciones de consulta sobre el catálogo
 
@@ -102,3 +123,7 @@ def totalCountries(analyzer):
     Totald de paises cargados
     """
     return model.totalCountries(analyzer)
+
+
+def numClusters(analyzer, landing_point1, landing_point2):
+    model.numClusters(analyzer, landing_point1, landing_point2)
