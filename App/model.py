@@ -26,6 +26,7 @@
 
 
 import config as cf
+import haversine as hs
 from DISClib.ADT.graph import gr
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -52,22 +53,17 @@ def newAnalyzer():
     """
     try:
         analyzer = {
-                    'info': None,
-                    'landing points': None,
+                    'landing_points': None,
                     'connections': None,
                     'countries': None,
-                    'paths': None
                     }
-
-        analyzer['info'] = mp.newMap(maptype='PROBING',
-                                     comparefunction=compareLandingIds)
 
         analyzer['landing_points'] = mp.newMap(numelements=1300,
                                                maptype='PROBING',
                                                comparefunction=compareLandingIds)
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
+                                              directed=False,
                                               size=3300,
                                               comparefunction=compareLandingIds)
         
@@ -80,55 +76,39 @@ def newAnalyzer():
 
 # Construccion de modelos
 
-def prepareData(analyzer, point):
-    connectionsLst = lt.newList('ARRAY_LIST', cmpfunction=compareconnections)
-    mp.put(analyzer['landing_points'], point['landing_point_id'], connectionsLst)
-
-
-def loadData(analyzer, connection):
-    entry = mp.get(analyzer['landing_points'], connection['origin'])
-    cableLst = entry["value"]
-    cableName = connection['cable_name']
-    if not lt.isPresent(cableLst, cableName):
-        lt.addLast(cableLst, cableName)
-    pointName = formatVertex(connection)
-    entry = mp.get(analyzer['info'], pointName)
-    if entry is None:
-        connectionsLst = lt.newList()
-        mp.put(analyzer['info'], pointName, connectionsLst)
+def addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital):
+    if lstPuntoActual is None:
+        lstPuntoActual = lt.newList("ARRAY_LIST")
+    puntoOrigen = connection['origin'] + '-' + connection['cable_name']
+    puntoDestino = connection['destination'] + '-' + connection['cable_name']
+    addPoint(analyzer, puntoOrigen)
+    addPoint(analyzer, puntoDestino)
+    if connection['cable_length'] != 'n.a.':
+        distancia = float(connection['cable_length'].replace(",","").split()[0])
     else:
-        connectionsLst = me.getValue(entry)
-    lt.addLast(connectionsLst, connection)
+        locOrigen = (float(point['latitude']), float(point['longitude']))
+        locDestino = mp.get(analyzer['landing_points'], connection['destination'])['value']
+        distancia = round(hs.haversine(locOrigen,locDestino), 2)
+        print(distancia)
+    addConnection(analyzer, puntoOrigen, puntoDestino, distancia)
+    loc1 = (float(point["latitude"]), float(point["longitude"]))
+    loc2 = (float(datosCapital["CapitalLatitude"]), float(datosCapital["CapitalLongitude"]))
+    distanciaHaversine = round(hs.haversine(loc1,loc2), 2)
+    capital = datosCapital['CapitalName'] + "-" + datosCapital['CountryName']
+    addConnection(analyzer, puntoOrigen, capital, distanciaHaversine)
+    lt.addLast(lstPuntoActual, puntoOrigen)
+    return lstPuntoActual
 
 
-def loadCountry(analyzer, country):
-    mp.put(analyzer['countries'], country['CountryName'], country)
+def addConnectionsPoint(analyzer, lstPuntoActual):
+    for punto1 in lt.iterator(lstPuntoActual):
+        for punto2 in lt.iterator(lstPuntoActual):
+            if punto1 != punto2:
+                addConnection(analyzer, punto1, punto2, 0.1)
+    return analyzer
 
 
-def addLandingPoints(analyzer):
-    pointsLst = mp.keySet(analyzer['landing_points'])
-    for key in lt.iterator(pointsLst):
-        cablelst = mp.get(analyzer['landing_points'], key)['value']
-        for cableName in lt.iterator(cablelst):
-            LPname = key + "-" + cableName
-            addPoint(analyzer, LPname)
-
-
-def addPointConnections(analyzer):
-    pointsLst = mp.keySet(analyzer['landing_points'])
-    for key in lt.iterator(pointsLst):
-        cablesLst = mp.get(analyzer['landing_points'], key)['value']
-        prevPoint = None
-        for cable in lt.iterator(cablesLst):
-            origin = key + "-" + cable
-            info = mp.get(analyzer['info'], origin)["value"]
-            for connection in lt.iterator(info):
-                destination = connection['destination'] + "-" + cable
-                addConnection(analyzer, origin, destination, info)
-                addConnection(analyzer, destination, origin, info)
-
-
-def addConnection(analyzer, destination, origin, distance):
+def addConnection(analyzer, origin, destination, distance):
     """
     Adiciona un arco entre dos landing_points
     """
@@ -149,8 +129,15 @@ def addPoint(analyzer, pointid):
         error.reraise(exp, 'model:addPoint')
 
 
-# Funciones para agregar informacion al catalogo
+def addCountry(analyzer, country):
+    mp.put(analyzer['countries'], country['CountryName'],country['CapitalName'])
+    return analyzer
 
+# Funciones para agregar informacion al catalogo
+def addPosition(analyzer, punto):
+    loc = (float(punto["latitude"]),float(punto["longitude"]))
+    mp.put(analyzer["landing_points"], punto["landing_point_id"],loc)
+    return analyzer
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -212,12 +199,4 @@ def compareconnections(connection1, connection2):
 # Funciones Helper
 # ==============================
 
-def formatVertex(connection):
-    """
-    Se formatea el nombre del vertice con el id del landing point
-    seguido del nombre del cable.
-    """
-    name = connection['origin'] + '-'
-    name = name + connection['cable_name']
-    return name
 

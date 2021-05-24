@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from os import name
 import config as cf
 import model
 import csv
@@ -57,18 +58,25 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
     connections_File = csv.DictReader(open(connectionsFile, encoding="utf-8-sig"), delimiter=",")
     countries_File = csv.DictReader(open(countriesFile, encoding="utf-8"), delimiter=",")
 
+    for punto in landing_File:
+        model.addPosition(analyzer, punto)
+
     for point in landing_File:
-        model.prepareData(analyzer, point)
+        name = point['name'].split(", ")
+        pais = name[1]
+        for country in countries_File:
+            if country['CountryName'] == pais:
+                capital = country['CapitalName'] + "-" + pais
+                model.addPoint(analyzer, capital)
+                datosCapital = country
+                model.addCountry(analyzer, country)
 
-    for connection in connections_File:
-        model.loadData(analyzer, connection)
+        lstPuntoActual = None
+        for connection in connections_File:
+            lstPuntoActual = model.addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital)
+        model.addConnectionsPoint(analyzer, lstPuntoActual)
 
-    for country in countries_File:
-        model.loadCountry(analyzer, country)
 
-    model.addLandingPoints(analyzer)
-
-    model.addPointConnections(analyzer)
 
 
 # Funciones de ordenamiento
