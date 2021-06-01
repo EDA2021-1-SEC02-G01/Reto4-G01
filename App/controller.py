@@ -66,9 +66,10 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
     listaCountries = lt.newList('ARRAY_LIST')
 
     for punto in landing_File:
-        model.addPosition(analyzer, punto) 
+        model.addPosition(analyzer, punto)
+        model.addLandingPointInfo(analyzer, punto)
         lt.addLast(listaLandingPoints, punto)
-    
+
     for connection in connections_File:
         lt.addLast(listaConnections, connection)
 
@@ -88,16 +89,18 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
                 model.addPoint(analyzer, capital)
                 datosCapital = country
                 break
-        
+
         lstPuntoActual = None
         for connection in lt.iterator(listaConnections):
             if connection['origin'] == point['landing_point_id']:
-                lstPuntoActual = model.addLandingPoint(analyzer, point,
+                lstPuntoActual = model.addLandingPoint(analyzer,
+                                                       point,
                                                        connection,
                                                        lstPuntoActual,
                                                        datosCapital)
         model.addConnectionsPoint(analyzer, lstPuntoActual)
-
+    for country in lt.iterator(listaCountries):
+            model.addCapitals(analyzer, country)
 
 # Funciones de ordenamiento
 
@@ -120,10 +123,28 @@ def totalConnections(analyzer):
 
 def totalCountries(analyzer):
     """
-    Totald de paises cargados
+    Total de paises cargados
     """
     return model.totalCountries(analyzer)
 
 
-def numClusters(analyzer, landing_point1, landing_point2):
-    model.numClusters(analyzer, landing_point1, landing_point2)
+def firstVertex(analyzer):
+    """
+    Retorna el primer vértice cargado
+    """
+    return model.firstVertex(analyzer)
+
+
+def firstCountry(analyzer):
+    """
+    Retorna la informacion del primer pais cargado
+    """
+    return model.firstCountry(analyzer)
+
+
+def Requerimiento1(analyzer, landing_point1, landing_point2):
+    """
+    Retorna el número de componentes fuertemente conectados
+    del grafo
+    """
+    return model.Requerimiento1(analyzer, landing_point1, landing_point2)

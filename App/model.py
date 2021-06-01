@@ -42,6 +42,7 @@ Se define la estructura de un catálogo de videos. El catálogo tendrá dos list
 los mismos.
 """
 
+
 def newAnalyzer():
     """ Inicializa el analizador
 
@@ -60,13 +61,17 @@ def newAnalyzer():
 
         analyzer['landing_points'] = mp.newMap(numelements=1300,
                                                maptype='PROBING',
-                                               comparefunction=compareLandingIds)
+                                               comparefunction=cmpLandingIds)
+
+        analyzer['coordinates'] = mp.newMap(numelements=1300,
+                                            maptype='PROBING',
+                                            comparefunction=cmpLandingIds)
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=False,
+                                              directed=True,
                                               size=3300,
-                                              comparefunction=compareLandingIds)
-        
+                                              comparefunction=cmpLandingIds)
+
         analyzer['countries'] = mp.newMap(numelements=300,
                                           maptype='PROBING')
         return analyzer
@@ -84,17 +89,23 @@ def addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital):
     addPoint(analyzer, puntoOrigen)
     addPoint(analyzer, puntoDestino)
     if connection['cable_length'] != 'n.a.':
-        distancia = float(connection['cable_length'].replace(",","").split()[0])
+        distancia = connection['cable_length'].replace(",", "")
+        distancia = float(distancia.split()[0])
     else:
         locOrigen = (float(point['latitude']), float(point['longitude']))
-        locDestino = mp.get(analyzer['landing_points'], connection['destination'])['value']
-        distancia = round(hs.haversine(locOrigen,locDestino), 2)
+        locDestino = mp.get(analyzer['coordinates'],
+                            connection['destination'])['value']
+        distancia = round(hs.haversine(locOrigen, locDestino), 2)
     addConnection(analyzer, puntoOrigen, puntoDestino, distancia)
-    loc1 = (float(point["latitude"]), float(point["longitude"]))
-    loc2 = (float(datosCapital["CapitalLatitude"]), float(datosCapital["CapitalLongitude"]))
-    distanciaHaversine = round(hs.haversine(loc1,loc2), 2)
+    addConnection(analyzer, puntoDestino, puntoOrigen, distancia)
+    loc1 = (float(point["latitude"]),
+            float(point["longitude"]))
+    loc2 = (float(datosCapital["CapitalLatitude"]),
+            float(datosCapital["CapitalLongitude"]))
+    distanciaHaversine = round(hs.haversine(loc1, loc2), 2)
     capital = datosCapital['CapitalName'] + "-" + datosCapital['CountryName']
     addConnection(analyzer, puntoOrigen, capital, distanciaHaversine)
+    addConnection(analyzer, capital, puntoOrigen, distanciaHaversine)
     lt.addLast(lstPuntoActual, puntoOrigen)
     return lstPuntoActual
 
@@ -130,16 +141,32 @@ def addPoint(analyzer, pointid):
 
 
 def addCountry(analyzer, country):
-    mp.put(analyzer['countries'], country['CountryName'],country['CapitalName'])
+    mp.put(analyzer['countries'],
+           country['CountryName'],
+           country)
     return analyzer
 
 
+def addCapitals(analyzer, country):
+    """
+    capital = country['CapitalName'] + "-" + country['CountryName']
+    addPoint(analyzer['connections'], capital)
+    grado = gr.degree(analyzer['connections'], capital)
+    print(grado)
+    if grado == 0:
+        listaPoint
+    """
 # Funciones para agregar informacion al catalogo
 
 
 def addPosition(analyzer, punto):
     loc = (float(punto["latitude"]), float(punto["longitude"]))
-    mp.put(analyzer["landing_points"], punto["landing_point_id"], loc)
+    mp.put(analyzer["coordinates"], punto["landing_point_id"], loc)
+    return analyzer
+
+
+def addLandingPointInfo(analyzer, punto):
+    mp.put(analyzer["landing_points"], punto["landing_point_id"], punto)
     return analyzer
 
 
@@ -170,12 +197,42 @@ def totalCountries(analyzer):
     return mp.size(analyzer['countries'])
 
 
+def firstVertex(analyzer):
+    """
+    Retorna la informacion del primer vértice cargado
+    """
+    listaVertices = mp.keySet(analyzer['landing_points'])
+    primerPoint = lt.firstElement(listaVertices)
+    infoPoint = mp.get(analyzer['landing_points'], primerPoint)['value']
+    return infoPoint
+
+
+def firstCountry(analyzer):
+    """
+    Retorna la informacion del primer pais cargado
+    """
+    listaPaises = mp.keySet(analyzer['countries'])
+    ultimoPais = lt.lastElement(listaPaises)
+    infoPais = mp.get(analyzer['countries'], ultimoPais)['value']
+    return infoPais
+
+
+def Requerimiento1(analyzer, landing_point1, landing_point2):
+    """
+    Retorna . . . 
+    """
+    clusters = scc.KosarajuSCC(analyzer['connections'])
+    numClusters = scc.connectedComponents(clusters)
+    #mismoCluster = scc.stronglyConnected()
+    return numClusters
+
+
 
 # ==============================
 # Funciones de Comparacion
 # ==============================
 
-def compareLandingIds(landingPoint, keyValueLP):
+def cmpLandingIds(landingPoint, keyValueLP):
     """
     Compara dos landing points
     """
@@ -205,5 +262,3 @@ def compareconnections(connection1, connection2):
 # ==============================
 # Funciones Helper
 # ==============================
-
-

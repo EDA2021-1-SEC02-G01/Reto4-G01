@@ -62,19 +62,34 @@ def optionTwo(cont):
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalPoints(cont)
     numCountries = controller.totalCountries(cont)
+    firstVertex = controller.firstVertex(cont)
+    lastCountry = controller.firstCountry(cont)
     print("="*5 + " DATOS CARGADOS " + "="*5)
     print('Numero de vertices: ' + str(numvertex))
     print('Numero de arcos: ' + str(numedges))
-    print('Numero de paises:', numCountries)
+    print('Numero de paises:' + str(numCountries))
+    print('Primer landing point cargado: ' +
+          str(firstVertex['landing_point_id']))
+    print('Nombre landing point: ' + firstVertex['name'])
+    print('Latitud: ' + str(firstVertex['latitude']))
+    print('Longitud: ' + str(firstVertex['longitude']))
+    print('Ultimo pais cargado:', lastCountry['CountryName'])
+    print('Población de ' + lastCountry['CountryName'] + ": " +
+          lastCountry['Population'])
+    print('Usuarios de internet de ' + lastCountry['CountryName'] + ": " +
+          str(lastCountry['Internet users']))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
-    print()
+    print('')
 
 
 def optionThree(cont):
     landing_point1 = input("Ingrese el nombre del landing point 1: ")
     landing_point2 = input("Ingrese el nombre del landing point 2: ")
-    numClusters = controller.numClusters()
+    numClusters = controller.Requerimiento1(cont,
+                                            landing_point1,
+                                            landing_point2)
     print("="*5 + " REQUERIMIENTO 1 " + "="*5)
+    print("Total de clústeres: " + str(numClusters))
 
     pass
 
@@ -128,4 +143,3 @@ if __name__ == "__main__":
     sys.setrecursionlimit(2 ** 20)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
-
