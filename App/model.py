@@ -223,9 +223,8 @@ def Requerimiento1(analyzer, landing_point1, landing_point2):
     """
     clusters = scc.KosarajuSCC(analyzer['connections'])
     numClusters = scc.connectedComponents(clusters)
-    #mismoCluster = scc.stronglyConnected()
+    mismoCluster = scc.stronglyConnected()
     return numClusters
-
 
 
 # ==============================
