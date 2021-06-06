@@ -99,16 +99,43 @@ def optionThree(cont):
     else:
         print(f"{landing_point1} y {landing_point2} NO estan fuertemente" +
               " conectados")
-
-    pass
+    print()
 
 
 def optionFour(cont):
-    pass
+    lstLP = controller.Requerimiento2(cont)
+    print("="*5 + " REQUERIMIENTO 2 " + "="*5)
+    for punto, totalCables in lt.iterator(lstLP):
+        nombre = punto['name'].split(", ")[0]
+        pais = punto['name'].split(", ")[1] 
+        identificador = punto['landing_point_id']
+        print(f"El punto {nombre} del pais {pais} con identificador" +
+              f" {identificador} sirve de interconexion a {totalCables} cables.")
+    print()
 
 
 def optionFive(cont):
-    pass
+    paisA = input("Ingrese el pais de origen: ")
+    paisB = input("Ingrese el pais destino: ")
+    ruta, distancia = controller.Requerimiento3(cont, paisA, paisB)
+    print("="*5 + " REQUERIMIENTO 3 " + "="*5)
+    if ruta == -1:
+        print(f"El país {paisA} no se encontró")
+    elif ruta == -2:
+        print(f"El país {paisB} no se encontró")
+    else:
+        print("--RUTA--")
+        i = 1
+        for cableInfo in lt.iterator(ruta):
+            vertexA = cableInfo['vertexA']
+            vertexB = cableInfo['vertexB']
+            peso = cableInfo['weight']
+            print(f"{i}. Desde {vertexA} hasta {vertexB}: {peso} Km")
+            i += 1
+        print()
+        print(f"DISTANCIA TOTAL DE LA RUTA: {distancia}")
+        print()
+    print()
 
 
 def optionSix(cont):

@@ -155,3 +155,18 @@ def Requerimiento1(analyzer, landing_point1, landing_point2):
     del grafo
     """
     return model.Requerimiento1(analyzer, landing_point1, landing_point2)
+
+
+def Requerimiento2(analyzer):
+    """
+    Retorna una lista con los landing Points que sirven como punto de
+    interconexion a más cables en la red
+    """
+    return model.Requerimiento2(analyzer)
+
+
+def Requerimiento3(analyzer, paisA, paisB):
+    """
+    Retorna la ruta minima entre dos capitales
+    """
+    return model.Requerimiento3(analyzer, paisA, paisB)

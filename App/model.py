@@ -282,6 +282,41 @@ def Requerimiento1(analyzer, landing_point1, landing_point2):
     return numClusters, mismoCluster
 
 
+def Requerimiento2(analyzer):
+    lstPuntos = mp.valueSet(analyzer['landing_points'])
+    mayorNumCables = 0
+    for punto in lt.iterator(lstPuntos):
+        LPid = punto['landing_point_id']
+        vertices = mp.get(analyzer['points_vertices'], LPid)['value']
+        totalCables = lt.size(vertices) + 1
+        if totalCables > mayorNumCables:
+            listaLP = lt.newList()
+            lt.addLast(listaLP, (punto, totalCables))
+            mayorNumCables = totalCables
+        elif totalCables == mayorNumCables:
+            lt.addLast(listaLP, (punto, totalCables))
+    return listaLP
+
+
+def Requerimiento3(analyzer, paisA, paisB):
+    infoPaisA = mp.get(analyzer['countries'], paisA.title())
+    if infoPaisA is not None:
+        infoA = me.getValue(infoPaisA)
+        LPCapitalA = infoA['CapitalName'] + "-" + infoA['CountryName']
+    else:
+        return -1, 0
+    infoPaisB = mp.get(analyzer['countries'], paisB.title())
+    if infoPaisB is not None:
+        infoB = me.getValue(infoPaisB)
+        LPCapitalB = infoB['CapitalName'] + "-" + infoB['CountryName']
+    else:
+        return -2, 0
+    estructura = djk.Dijkstra(analyzer['connections'], LPCapitalA)
+    ruta = djk.pathTo(estructura, LPCapitalB)
+    distanciaTotal = djk.distTo(estructura, LPCapitalB)
+    return ruta, distanciaTotal
+
+
 # ==============================
 # Funciones de Comparacion
 # ==============================
