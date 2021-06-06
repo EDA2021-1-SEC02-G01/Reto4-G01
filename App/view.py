@@ -21,6 +21,7 @@
  """
 
 import config as cf
+import threading
 import sys
 import controller
 from DISClib.ADT import list as lt
@@ -85,11 +86,19 @@ def optionTwo(cont):
 def optionThree(cont):
     landing_point1 = input("Ingrese el nombre del landing point 1: ")
     landing_point2 = input("Ingrese el nombre del landing point 2: ")
-    numClusters = controller.Requerimiento1(cont,
-                                            landing_point1,
-                                            landing_point2)
+    numClusters, mismoCluster = controller.Requerimiento1(cont,
+                                                          landing_point1,
+                                                          landing_point2)
     print("="*5 + " REQUERIMIENTO 1 " + "="*5)
     print("Total de clústeres: " + str(numClusters))
+    if mismoCluster:
+        print(f"{landing_point1} y {landing_point2} estan fuertemente" +
+              " conectados")
+    elif mismoCluster == -1:
+        print("Al menos uno de los vertices ingresados no existen en el grafo")
+    else:
+        print(f"{landing_point1} y {landing_point2} NO estan fuertemente" +
+              " conectados")
 
     pass
 
@@ -116,27 +125,31 @@ catalog = None
 """
 Menu principal
 """
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
-        cont = controller.init()
-    elif int(inputs[0]) == 2:
-        optionTwo(cont)
-    elif int(inputs[0]) == 3:
-        optionThree(cont)
-    elif int(inputs[0]) == 4:
-        optionFour(cont)
-    elif int(inputs[0]) == 5:
-        optionFive(cont)
-    elif int(inputs[0]) == 6:
-        optionSix(cont)
-    elif int(inputs[0]) == 7:
-        optionSeven(cont)
-    else:
-        sys.exit(0)
-sys.exit(0)
+
+
+def thread_cycle():
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            print("Cargando información de los archivos ....")
+            cont = controller.init()
+        elif int(inputs[0]) == 2:
+            optionTwo(cont)
+        elif int(inputs[0]) == 3:
+            optionThree(cont)
+        elif int(inputs[0]) == 4:
+            optionFour(cont)
+        elif int(inputs[0]) == 5:
+            optionFive(cont)
+        elif int(inputs[0]) == 6:
+            optionSix(cont)
+        elif int(inputs[0]) == 7:
+            optionSeven(cont)
+        else:
+            sys.exit(0)
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     threading.stack_size(67108864)  # 64MB stack

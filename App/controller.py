@@ -26,10 +26,10 @@ import config as cf
 import model
 import csv
 
-
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
+
 
 # Inicialización del Catálogo de libros
 def init():
@@ -55,11 +55,18 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
     landingFile = cf.data_dir + landingFile
     connectionsFile = cf.data_dir + connectionsFile
     countriesFile = cf.data_dir + countriesFile
-    landing_File = csv.DictReader(open(landingFile, encoding="utf-8"), delimiter=",")
-    connections_File = csv.DictReader(open(connectionsFile, encoding="utf-8-sig"), delimiter=",")
-    countries_File = csv.DictReader(open(countriesFile, encoding="utf-8"), delimiter=",")
+    landing_File = csv.DictReader(open(landingFile,
+                                       encoding="utf-8"),
+                                  delimiter=",")
+    connections_File = csv.DictReader(open(connectionsFile,
+                                           encoding="utf-8-sig"),
+                                      delimiter=",")
+    countries_File = csv.DictReader(open(countriesFile,
+                                         encoding="utf-8"),
+                                    delimiter=",")
 
-    # Creacion de listas vacias para agregar cada uno de los elementos de lso archivos
+    # Creacion de listas vacias para agregar cada uno
+    #  de los elementos de los archivos
     # y asi recorrerlos mas facilmente.
     listaLandingPoints = lt.newList('ARRAY_LIST')
     listaConnections = lt.newList('ARRAY_LIST')
@@ -78,11 +85,11 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
         model.addCountry(analyzer, pais)
 
     for point in lt.iterator(listaLandingPoints):
-        name = point['name'].split(", ")
-        if len(name) < 2:
+        nombre = point['name'].split(", ")
+        if len(nombre) < 2:
             pais = 'Micronesia'
         else:
-            pais = name[1]
+            pais = nombre[1]
         for country in lt.iterator(listaCountries):
             if country['CountryName'] == pais:
                 capital = country['CapitalName'] + "-" + pais
@@ -100,7 +107,7 @@ def loadData(analyzer, landingFile, connectionsFile, countriesFile):
                                                        datosCapital)
         model.addConnectionsPoint(analyzer, lstPuntoActual)
     for country in lt.iterator(listaCountries):
-            model.addCapitals(analyzer, country)
+        model.addCapitals(analyzer, country)
 
 # Funciones de ordenamiento
 

@@ -38,8 +38,8 @@ from DISClib.Utils import error
 assert cf
 
 """
-Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
-los mismos.
+Se define la estructura de un catálogo de videos. El catálogo tendrá dos
+listas, una para los videos, otra para las categorias de los mismos.
 """
 
 
@@ -62,6 +62,10 @@ def newAnalyzer():
         analyzer['landing_points'] = mp.newMap(numelements=1300,
                                                maptype='PROBING',
                                                comparefunction=cmpLandingIds)
+
+        analyzer['points_vertices'] = mp.newMap(numelements=1300,
+                                                maptype='PROBING',
+                                                comparefunction=cmpLandingIds)
 
         analyzer['coordinates'] = mp.newMap(numelements=1300,
                                             maptype='PROBING',
@@ -86,6 +90,8 @@ def addLandingPoint(analyzer, point, connection, lstPuntoActual, datosCapital):
         lstPuntoActual = lt.newList("ARRAY_LIST")
     puntoOrigen = connection['origin'] + '-' + connection['cable_name']
     puntoDestino = connection['destination'] + '-' + connection['cable_name']
+    addPointVertices(analyzer, connection['origin'], puntoOrigen)
+    addPointVertices(analyzer, connection['destination'], puntoDestino)
     addPoint(analyzer, puntoOrigen)
     addPoint(analyzer, puntoDestino)
     if connection['cable_length'] != 'n.a.':
@@ -147,15 +153,44 @@ def addCountry(analyzer, country):
     return analyzer
 
 
+def addPointVertices(analyzer, landing_point, vertex):
+    entry = mp.get(analyzer['points_vertices'], landing_point)
+    if entry is None:
+        lstVertices = lt.newList()
+        mp.put(analyzer['points_vertices'], landing_point, lstVertices)
+    else:
+        lstVertices = me.getValue(entry)
+    if lt.isPresent(lstVertices, vertex) == 0:
+        lt.addLast(lstVertices, vertex)
+
+
 def addCapitals(analyzer, country):
-    """
     capital = country['CapitalName'] + "-" + country['CountryName']
-    addPoint(analyzer['connections'], capital)
+    addPoint(analyzer, capital)
     grado = gr.degree(analyzer['connections'], capital)
-    print(grado)
     if grado == 0:
-        listaPoint
-    """
+        info = mp.get(analyzer['countries'], country['CountryName'])['value']
+        latitud = info['CapitalLatitude']
+        longitud = info['CapitalLongitude']
+        listaPoints = mp.valueSet(analyzer["landing_points"])
+        difMasCercana = 100
+        for point in lt.iterator(listaPoints):
+            difLat = abs(float(point['latitude']) - float(latitud))
+            difLon = abs(float(point['longitude']) - float(longitud))
+            difTot = difLat + difLon
+            if difTot < difMasCercana:
+                difMasCercana = difTot
+                LPmasCercano = point
+        listaVertices = mp.get(analyzer['points_vertices'],
+                               LPmasCercano['landing_point_id'])['value']
+        coordOrigen = (float(latitud), float(longitud))
+        coordDestino = (float(LPmasCercano["latitude"]),
+                        float(LPmasCercano["longitude"]))
+        distancia = round(hs.haversine(coordOrigen, coordDestino), 2)
+        for vertice in lt.iterator(listaVertices):
+            addConnection(analyzer, capital, vertice, distancia)
+            addConnection(analyzer, vertice, capital, distancia)
+
 # Funciones para agregar informacion al catalogo
 
 
@@ -219,12 +254,32 @@ def firstCountry(analyzer):
 
 def Requerimiento1(analyzer, landing_point1, landing_point2):
     """
-    Retorna . . . 
+    Retorna ...
     """
     clusters = scc.KosarajuSCC(analyzer['connections'])
     numClusters = scc.connectedComponents(clusters)
-    mismoCluster = scc.stronglyConnected()
-    return numClusters
+    mismoCluster = -1
+    punto1 = None
+    punto2 = None
+    listaPuntos = mp.valueSet(analyzer['landing_points'])
+    for punto in lt.iterator(listaPuntos):
+        nombre = punto['name'].split(", ")[0]
+        if nombre == landing_point1.title():
+            punto1 = punto['landing_point_id']
+        if nombre == landing_point2.title():
+            punto2 = punto['landing_point_id']
+    if punto1 is not None and punto2 is not None:
+        entry = mp.get(analyzer["points_vertices"], punto1)
+        if entry is not None:
+            lstLP1 = me.getValue(entry)
+            lp1 = lt.firstElement(lstLP1)
+        entry = mp.get(analyzer["points_vertices"], punto2)
+        if entry is not None:
+            lstLP2 = me.getValue(entry)
+            lp2 = lt.firstElement(lstLP2)
+        if lp1 != "" and lp2 != "":
+            mismoCluster = scc.stronglyConnected(clusters, lp1, lp2)
+    return numClusters, mismoCluster
 
 
 # ==============================
@@ -254,6 +309,10 @@ def compareconnections(connection1, connection2):
         return 1
     else:
         return -1
+
+
+def cmpCoordinates(coordinate1, coordinate2):
+    return coordinate1 > coordinate2
 
 
 # Funciones de ordenamiento
