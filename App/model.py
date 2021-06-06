@@ -25,6 +25,7 @@
  """
 
 
+from haversine.haversine import haversine
 import config as cf
 import haversine as hs
 from DISClib.ADT.graph import gr
@@ -304,17 +305,22 @@ def Requerimiento3(analyzer, paisA, paisB):
         infoA = me.getValue(infoPaisA)
         LPCapitalA = infoA['CapitalName'] + "-" + infoA['CountryName']
     else:
-        return -1, 0
+        return -1, 0, 0
     infoPaisB = mp.get(analyzer['countries'], paisB.title())
     if infoPaisB is not None:
         infoB = me.getValue(infoPaisB)
         LPCapitalB = infoB['CapitalName'] + "-" + infoB['CountryName']
     else:
-        return -2, 0
+        return -2, 0, 0
     estructura = djk.Dijkstra(analyzer['connections'], LPCapitalA)
     ruta = djk.pathTo(estructura, LPCapitalB)
     distanciaTotal = djk.distTo(estructura, LPCapitalB)
-    return ruta, distanciaTotal
+    coordA = (float(infoA['CapitalLatitude']),
+              float(infoA['CapitalLongitude']))
+    coordB = (float(infoB['CapitalLatitude']),
+              float(infoB['CapitalLongitude']))
+    distanciaHav = round(hs.haversine(coordA, coordB), 2)
+    return ruta, distanciaTotal, distanciaHav
 
 
 # ==============================

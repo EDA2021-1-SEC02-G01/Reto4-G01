@@ -117,7 +117,7 @@ def optionFour(cont):
 def optionFive(cont):
     paisA = input("Ingrese el pais de origen: ")
     paisB = input("Ingrese el pais destino: ")
-    ruta, distancia = controller.Requerimiento3(cont, paisA, paisB)
+    ruta, distancia, distHaversine = controller.Requerimiento3(cont, paisA, paisB)
     print("="*5 + " REQUERIMIENTO 3 " + "="*5)
     if ruta == -1:
         print(f"El país {paisA} no se encontró")
@@ -133,8 +133,8 @@ def optionFive(cont):
             print(f"{i}. Desde {vertexA} hasta {vertexB}: {peso} Km")
             i += 1
         print()
-        print(f"DISTANCIA TOTAL DE LA RUTA: {distancia}")
-        print()
+        print(f"DISTANCIA TOTAL DE LA RUTA: {distancia} Km")
+        print(f"DISTANCIA GEOGRÁFICA ENTRE LAS CAPITALES: {distHaversine} Km")
     print()
 
 
