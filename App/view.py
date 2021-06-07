@@ -22,6 +22,7 @@
 
 import config as cf
 import threading
+import tracemalloc
 import sys
 import controller
 from DISClib.ADT import list as lt
@@ -59,6 +60,8 @@ def printMenu():
 
 
 def optionTwo(cont):
+    # toma de tiempo
+    start_time = controller.getTime()
     controller.loadData(cont, landingFile, connectionsFile, countriesFile)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalPoints(cont)
@@ -80,12 +83,20 @@ def optionTwo(cont):
     print('Usuarios de internet de ' + lastCountry['CountryName'] + ": " +
           str(lastCountry['Internet users']))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
     print('')
 
 
 def optionThree(cont):
+    
     landing_point1 = input("Ingrese el nombre del landing point 1: ")
     landing_point2 = input("Ingrese el nombre del landing point 2: ")
+    # toma de tiempo
+    start_time = controller.getTime()
     numClusters, mismoCluster = controller.Requerimiento1(cont,
                                                           landing_point1,
                                                           landing_point2)
@@ -99,10 +110,17 @@ def optionThree(cont):
     else:
         print(f"{landing_point1} y {landing_point2} NO estan fuertemente" +
               " conectados")
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
     print()
 
 
 def optionFour(cont):
+    # toma de tiempo
+    start_time = controller.getTime()
     lstLP = controller.Requerimiento2(cont)
     print("="*5 + " REQUERIMIENTO 2 " + "="*5)
     for punto, totalCables in lt.iterator(lstLP):
@@ -111,12 +129,20 @@ def optionFour(cont):
         identificador = punto['landing_point_id']
         print(f"El punto {nombre} del pais {pais} con identificador" +
               f" {identificador} sirve de interconexion a {totalCables} cables.")
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
     print()
 
 
 def optionFive(cont):
+
     paisA = input("Ingrese el pais de origen: ")
     paisB = input("Ingrese el pais destino: ")
+    # toma de tiempo
+    start_time = controller.getTime()
     ruta, distancia, distHaversine = controller.Requerimiento3(cont, paisA, paisB)
     print("="*5 + " REQUERIMIENTO 3 " + "="*5)
     if ruta == -1:
@@ -135,19 +161,33 @@ def optionFive(cont):
         print()
         print(f"DISTANCIA TOTAL DE LA RUTA: {distancia} Km")
         print(f"DISTANCIA GEOGRÁFICA ENTRE LAS CAPITALES: {distHaversine} Km")
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
     print()
 
 
 def optionSix(cont):
+    # toma de tiempo
+    start_time = controller.getTime()
     numNodos, pesoMst = controller.Requerimiento4(cont)
     print("="*5 + " REQUERIMIENTO 5 " + "="*5)
     print(f"El numero de nodos conectados a la red de expansión mínima es: {numNodos}")
     print(f"El costo total de la red de expansión mínima es de: {pesoMst} Km")
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
     print()
 
 
 def optionSeven(cont):
     landing_point = input("Ingrese el nombre del landing point: ")
+    # toma de tiempo
+    start_time = controller.getTime()
     req5 = controller.Requerimiento5(cont, landing_point)
     print("="*5 + " REQUERIMIENTO 5 " + "="*5)
     numPaises, listaPaises = req5
@@ -156,6 +196,12 @@ def optionSeven(cont):
         nombre = pais[0]
         distancia = pais[1]
         print(f"{nombre}: {distancia} Km")
+    # toma de tiempo 
+    stop_time = controller.getTime()
+    delta_time = round(stop_time - start_time, 2)
+    # toma de tiempo
+    print(f"Tiempo de ejecucion: {delta_time}")
+    print()
 
 catalog = None
 

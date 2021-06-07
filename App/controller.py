@@ -25,6 +25,7 @@ from DISClib.ADT import list as lt
 import config as cf
 import model
 import csv
+import time
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -187,3 +188,15 @@ def Requerimiento5(analyzer, landing_point):
     el landing point, ademas de una lista con los paises
     """
     return model.Requerimiento5(analyzer, landing_point)
+
+
+# ======================================
+# Funciones para medir tiempo y memoria
+# ======================================
+
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
