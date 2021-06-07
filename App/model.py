@@ -325,7 +325,10 @@ def Requerimiento3(analyzer, paisA, paisB):
 
 
 def Requerimiento4(analyzer):
-    pass
+    mst = prim.PrimMST(analyzer['connections'])
+    numNodos = mp.size(mst['marked'])
+    pesoMst = prim.weightMST(analyzer['connections'], mst)
+    return numNodos, round(pesoMst, 2)
 
 
 def Requerimiento5(analyzer, landing_point):

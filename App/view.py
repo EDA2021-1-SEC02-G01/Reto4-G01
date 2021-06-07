@@ -139,7 +139,11 @@ def optionFive(cont):
 
 
 def optionSix(cont):
-    req4 = controller.Requerimiento4(cont)
+    numNodos, pesoMst = controller.Requerimiento4(cont)
+    print("="*5 + " REQUERIMIENTO 5 " + "="*5)
+    print(f"El numero de nodos conectados a la red de expansión mínima es: {numNodos}")
+    print(f"El costo total de la red de expansión mínima es de: {pesoMst} Km")
+    print()
 
 
 def optionSeven(cont):
