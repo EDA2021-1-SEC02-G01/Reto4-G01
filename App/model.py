@@ -35,6 +35,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim
 from DISClib.Utils import error
 assert cf
 
@@ -323,6 +324,55 @@ def Requerimiento3(analyzer, paisA, paisB):
     return ruta, distanciaTotal, distanciaHav
 
 
+def Requerimiento4(analyzer):
+    pass
+
+
+def Requerimiento5(analyzer, landing_point):
+    listaPuntos = mp.valueSet(analyzer['landing_points'])
+    for punto in lt.iterator(listaPuntos):
+        nombre = punto['name'].split(", ")[0]
+        if nombre == landing_point.title():
+            print(nombre)
+            LPid = punto['landing_point_id']
+            print(LPid)
+            vertices = mp.get(analyzer['points_vertices'], LPid)['value']
+            idsAdyacentes = lt.newList("ARRAY_LIST")
+            for vertex in lt.iterator(vertices):
+                adjacentsLst = gr.adjacentEdges(analyzer['connections'],
+                                                vertex)
+                for arco in lt.iterator(adjacentsLst):
+                    affectedLPid = arco['vertexB'].split("-")[0]
+                    if affectedLPid != LPid and affectedLPid[0] in "0123456789":
+                        if not lt.isPresent(idsAdyacentes, affectedLPid):
+                            lt.addLast(idsAdyacentes, affectedLPid)
+            infoPunto = punto
+    nombrePunto = infoPunto['name'].split(", ")
+    if len(nombrePunto) > 2:
+        paisPunto = nombrePunto[2]
+    else:
+        paisPunto = nombrePunto[1]
+    listaPaises = lt.newList()
+    for idLP in lt.iterator(idsAdyacentes):
+        lpInfo = mp.get(analyzer['landing_points'], idLP)['value']
+        nombreLP = lpInfo['name'].split(", ")
+        if len(nombreLP) > 2:
+            pais = nombreLP[2]
+        else:
+            pais = nombreLP[1]
+        verticesLP = mp.get(analyzer['points_vertices'], idLP)['value']
+        for verticeLP in lt.iterator(verticesLP):
+            for vertex in lt.iterator(vertices):
+                arco = gr.getEdge(analyzer['connections'], vertex, verticeLP)
+                if arco is not None:
+                    infoCountry = [pais, float(arco['weight'])]
+        if pais != paisPunto and not lt.isPresent(listaPaises, infoCountry):
+            lt.addLast(listaPaises, infoCountry)
+    numPaises = lt.size(listaPaises)
+    sa.sort(listaPaises, cmpPesoPaises)
+    return numPaises, listaPaises
+
+
 # ==============================
 # Funciones de Comparacion
 # ==============================
@@ -354,6 +404,10 @@ def compareconnections(connection1, connection2):
 
 def cmpCoordinates(coordinate1, coordinate2):
     return coordinate1 > coordinate2
+
+
+def cmpPesoPaises(pais1, pais2):
+    return pais1[1] > pais2[1]
 
 
 # Funciones de ordenamiento

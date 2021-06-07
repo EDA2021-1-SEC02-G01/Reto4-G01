@@ -139,12 +139,19 @@ def optionFive(cont):
 
 
 def optionSix(cont):
-    pass
+    req4 = controller.Requerimiento4(cont)
 
 
 def optionSeven(cont):
-    pass
-
+    landing_point = input("Ingrese el nombre del landing point: ")
+    req5 = controller.Requerimiento5(cont, landing_point)
+    print("="*5 + " REQUERIMIENTO 5 " + "="*5)
+    numPaises, listaPaises = req5
+    print(f"El numero de paises afectados es: {numPaises}")
+    for pais in lt.iterator(listaPaises):
+        nombre = pais[0]
+        distancia = pais[1]
+        print(f"{nombre}: {distancia} Km")
 
 catalog = None
 

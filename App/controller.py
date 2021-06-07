@@ -170,3 +170,20 @@ def Requerimiento3(analyzer, paisA, paisB):
     Retorna la ruta minima entre dos capitales
     """
     return model.Requerimiento3(analyzer, paisA, paisB)
+
+
+def Requerimiento4(analyzer):
+    """
+    Retorna a  redde  expansión  mínima  en  cuanto  a distancia
+    que pueda darle cobertura a la mayor cantidad de landing point
+    de la red
+    """
+    return model.Requerimiento4(analyzer)
+
+
+def Requerimiento5(analyzer, landing_point):
+    """
+    Retorna el numero de paises afectados en caso de que falle
+    el landing point, ademas de una lista con los paises
+    """
+    return model.Requerimiento5(analyzer, landing_point)
