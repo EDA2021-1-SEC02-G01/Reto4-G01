@@ -203,7 +203,7 @@ def optionSix(cont):
     stop_memory = controller.getMemory()
     tracemalloc.stop()
     delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
-    print("="*5 + " REQUERIMIENTO 5 " + "="*5)
+    print("="*5 + " REQUERIMIENTO 4 " + "="*5)
     print(f"El numero de nodos conectados a la red de expansión mínima es: {numNodos}")
     print(f"El costo total de la red de expansión mínima es de: {pesoMst} Km")
     # toma de tiempo 
