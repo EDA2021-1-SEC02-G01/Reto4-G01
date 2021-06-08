@@ -336,9 +336,7 @@ def Requerimiento5(analyzer, landing_point):
     for punto in lt.iterator(listaPuntos):
         nombre = punto['name'].split(", ")[0]
         if nombre == landing_point.title():
-            print(nombre)
             LPid = punto['landing_point_id']
-            print(LPid)
             vertices = mp.get(analyzer['points_vertices'], LPid)['value']
             idsAdyacentes = lt.newList("ARRAY_LIST")
             for vertex in lt.iterator(vertices):

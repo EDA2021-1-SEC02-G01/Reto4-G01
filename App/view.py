@@ -62,7 +62,12 @@ def printMenu():
 def optionTwo(cont):
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     controller.loadData(cont, landingFile, connectionsFile, countriesFile)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalPoints(cont)
     numCountries = controller.totalCountries(cont)
@@ -87,7 +92,9 @@ def optionTwo(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory}  kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
+    
     print('')
 
 
@@ -97,9 +104,14 @@ def optionThree(cont):
     landing_point2 = input("Ingrese el nombre del landing point 2: ")
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     numClusters, mismoCluster = controller.Requerimiento1(cont,
                                                           landing_point1,
                                                           landing_point2)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     print("="*5 + " REQUERIMIENTO 1 " + "="*5)
     print("Total de clústeres: " + str(numClusters))
     if mismoCluster:
@@ -114,14 +126,20 @@ def optionThree(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory} kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
     print()
 
 
 def optionFour(cont):
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     lstLP = controller.Requerimiento2(cont)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     print("="*5 + " REQUERIMIENTO 2 " + "="*5)
     for punto, totalCables in lt.iterator(lstLP):
         nombre = punto['name'].split(", ")[0]
@@ -133,7 +151,8 @@ def optionFour(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory} kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
     print()
 
 
@@ -143,7 +162,12 @@ def optionFive(cont):
     paisB = input("Ingrese el pais destino: ")
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     ruta, distancia, distHaversine = controller.Requerimiento3(cont, paisA, paisB)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     print("="*5 + " REQUERIMIENTO 3 " + "="*5)
     if ruta == -1:
         print(f"El país {paisA} no se encontró")
@@ -165,14 +189,20 @@ def optionFive(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory} kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
     print()
 
 
 def optionSix(cont):
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     numNodos, pesoMst = controller.Requerimiento4(cont)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     print("="*5 + " REQUERIMIENTO 5 " + "="*5)
     print(f"El numero de nodos conectados a la red de expansión mínima es: {numNodos}")
     print(f"El costo total de la red de expansión mínima es de: {pesoMst} Km")
@@ -180,7 +210,8 @@ def optionSix(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory} kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
     print()
 
 
@@ -188,7 +219,12 @@ def optionSeven(cont):
     landing_point = input("Ingrese el nombre del landing point: ")
     # toma de tiempo
     start_time = controller.getTime()
+    tracemalloc.start()
+    start_memory = controller.getMemory()
     req5 = controller.Requerimiento5(cont, landing_point)
+    stop_memory = controller.getMemory()
+    tracemalloc.stop()
+    delta_memory = round(controller.deltaMemory(start_memory, stop_memory), 2)
     print("="*5 + " REQUERIMIENTO 5 " + "="*5)
     numPaises, listaPaises = req5
     print(f"El numero de paises afectados es: {numPaises}")
@@ -200,7 +236,8 @@ def optionSeven(cont):
     stop_time = controller.getTime()
     delta_time = round(stop_time - start_time, 2)
     # toma de tiempo
-    print(f"Tiempo de ejecucion: {delta_time}")
+    print(f"Uso de memoria: {delta_memory} kB")
+    print(f"Tiempo de ejecucion: {delta_time} ms")
     print()
 
 catalog = None
